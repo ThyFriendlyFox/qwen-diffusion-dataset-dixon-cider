@@ -107,7 +107,7 @@ class Labels(BaseModel):
 
 
 class Revision(BaseModel):
-    """Critic-stage supervision: a real draft and how the plan changed to get to `target`."""
+    """Critic-stage supervision: a human draft and how the plan changed to get to `target`."""
 
     draft: str
     critiques: list[Critique] = Field(default_factory=list)

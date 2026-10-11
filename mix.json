@@ -1,5 +1,5 @@
 {
-  "_comment": "Rows to fetch per source. Ratio targets the user's ask: chat backbone, heavy math/science, real agentic traces, plus critic-stage revision pairs.",
+  "_comment": "Rows to fetch per source: chat backbone, weighted toward math/science and agentic traces, plus critic-stage revision pairs.",
   "sources": {
     "ultrachat": 6000,
     "gsm8k": 2500,

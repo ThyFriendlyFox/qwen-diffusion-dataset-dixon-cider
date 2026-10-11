@@ -54,7 +54,7 @@ def _sid(*parts) -> str:
 
 
 def _truncate(s: str, n: int) -> str:
-    return s if len(s) <= n else s[:n] + " …[truncated]"
+    return s if len(s) <= n else s[:n] + " ...[truncated]"
 
 
 def _tool_call(name: str, args) -> str:
@@ -171,7 +171,7 @@ def norm_glaive(row, rng):
         else:
             episode.append(_tool_response(body))
     if not any("<tool_call" in e for e in episode):
-        return None  # keep only rows that actually exercise tools
+        return None  # keep only rows that call a tool
     return {
         "domain": "agentic",
         "context": [
@@ -254,7 +254,7 @@ def norm_iterater(row, rng):
         return None
     return {
         "domain": "writing",
-        "context": [{"role": "user", "content": "Write the opening paragraph of this document. (Source: real author revision history; no original prompt.)"}],
+        "context": [{"role": "user", "content": "Write the opening paragraph of this document. (Source: author revision history; no original prompt.)"}],
         "target": row["after_revision"].strip(),
         "revision": {"draft": row["before_revision"].strip(), "human_feedback": None},
         "_key": f'{row["doc_id"]}:{row["revision_depth"]}',
@@ -272,7 +272,7 @@ class Source:
     split: str
     license: str
     normalize: Callable
-    stage: str = "plan"  # "plan" (rung labeling) or "critic" (has real drafts)
+    stage: str = "plan"  # "plan" (rung labeling) or "critic" (has human drafts)
     note: str = ""
 
 
@@ -288,7 +288,7 @@ SOURCES: dict[str, Source] = {s.name: s for s in [
     # agentic
     Source("toucan", "Agent-Ark/Toucan-1.5M", "SFT", "train", "apache-2.0", norm_toucan),
     Source("glaive", "glaiveai/glaive-function-calling-v2", "default", "train", "apache-2.0", norm_glaive),
-    # critic stage: real human drafts -> revisions
+    # critic stage: human drafts -> revisions
     Source("helpsteer3_edit", "nvidia/HelpSteer3", "edit", "train", "cc-by-4.0", norm_helpsteer3_edit, "critic",
            "Human annotators wrote feedback on a model response and then edited it."),
     Source("iterater", "wanyu/IteraTeR_full_doc", "default", "train", "apache-2.0", norm_iterater, "critic",
