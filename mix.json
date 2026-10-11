@@ -1,0 +1,14 @@
+{
+  "_comment": "Rows to fetch per source. Ratio targets the user's ask: chat backbone, heavy math/science, real agentic traces, plus critic-stage revision pairs.",
+  "sources": {
+    "ultrachat": 6000,
+    "gsm8k": 2500,
+    "numina": 4000,
+    "osr2": 3000,
+    "webinstruct": 2500,
+    "toucan": 4000,
+    "glaive": 1500,
+    "helpsteer3_edit": 1500,
+    "iterater": 1000
+  }
+}
