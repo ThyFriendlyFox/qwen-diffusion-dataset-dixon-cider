@@ -35,17 +35,17 @@ Target      final text, produced by the AR verbalizer
   "id": "gsm8k:72bbd7e7e2ca", "source": "openai/gsm8k", "domain": "math", "license": "mit",
   "context": [{"role": "user", "content": "..."}],          // conversation so far (incl. tool catalog for agentic)
   "target": "...",                                           // what the AR model must produce
-  "reference_answer": "72",                                  // math/science only
+  "reference_answer": "85",                                  // math/science only
   "labels": {
     "intent":    {"ideas": [...], "emotions": [...], "actions": [...], "audience": [...]},
     "structure": {"form": "...", "outline": [{"id": "S1", "purpose": "...", "glue": "none (opening)"}, ...]},
     "sketch":    {"blocks": [{"id": "B1", "section": "S1", "kind": "computation",
-                              "sketch": "May = half of April's 48",
+                              "sketch": "Tamika's distance = hrs x mph",
                               "support": "derived", "confidence": 0.99, "retrieve": null,
-                              "anchor": "Natalia sold 48/2 = 24"}, ...]},
+                              "anchor": "Tamika drove 8 hours * 45 mph"}, ...]},
     "quality":   {"score": 5, "issues": [{"block": "B3", "rung": "sketch", "issue": "...", "fix": "..."}]}
   },
-  "alignment": [{"block": "B1", "start": 0, "end": 41}, ...], // contiguous spans covering target
+  "alignment": [{"block": "B1", "start": 0, "end": 42}, ...], // contiguous spans covering target
   "evidence":  [{"block": "B4", "query": "...", "passage": null}],   // RETRIEVE slots, filled by a later retrieval pass
   "revision":  {"draft": "...", "human_feedback": "...", "critiques": [...]},  // critic-stage rows only
   "meta": {"teacher": "...", "prompt_version": "loa-v1", "gold": true, "warnings": []}
@@ -113,6 +113,23 @@ The critic stage needs a real draft → critique → revision. These are the bes
 5. **Planned**: arXiv v1→vN abstract and section diffs, StackExchange post-edit history (CC-BY-SA), and Wikipedia revision history for longer, structure-level edits.
 
 In critic mode the teacher labels the revised target. It then writes each meaningful draft → target change as a critique `{block, rung, issue, fix}`, which records which rung was wrong. That's the supervision for "re-mask block B3 at the sketch rung" during diffusion. Ordinary plan rows also contribute critic signal: whenever the teacher finds an error in a source response, it marks the block `unsupported` and adds a critique.
+
+## Gold seed set (`data/seed/seed.jsonl`)
+
+There are 37 real source rows, labeled by a frontier model working directly against this spec. Every row passes the validator: anchors are verbatim and contiguous, with no sketch that copies its target. The labelers re-did the math and checked the facts rather than trusting the source.
+
+- **Mix**: 6 UltraChat, 8 math (GSM8K, Numina), 8 science (OSR2, WebInstruct), 8 agentic (Toucan, Glaive), and 7 critic (HelpSteer3-edit, IteraTeR).
+- **Shape**: 1–8 blocks per row (mean 4.2). There are 77 critiques in total, and 10 blocks are flagged `unsupported`.
+- **Quality**: mean 3.7. 31 of 37 rows reach the default `build` floor (score ≥ 3).
+- **Source errors the teacher caught**, all of which `build` filters out:
+  - WebInstruct determinant: the source gives −2/9, but the true value is 1.
+  - WebInstruct Taylor series: the source has the wrong f‴.
+  - Toucan time-zone answer: it contradicts its own tool output.
+  - IteraTeR: one revision is page spam, and another is vandalism that flips "disproved" to "proved".
+- **What this says about the sources**:
+  - WebInstruct and IteraTeR are the noisiest. `norm_iterater` now drops page replacements (draft/revision similarity < 0.6) and fragments.
+  - HelpSteer3-edit is the richest critic source, with 2–6 critiques per row across all four rungs. Its human change summaries still need verifying, though: one was wrong, and one revision introduced a new error. The teacher records the revision as a regression critique in that case.
+- **`retrieve` is rare** (2 of 154 blocks). Most source responses avoid exact figures. If the AR grounding step needs more RETRIEVE slots, add citation-heavy sources such as long-form science explanations.
 
 ## Running it
 

@@ -12,6 +12,7 @@ downloaded in bulk and no `datasets` install is required.
 from __future__ import annotations
 
 import ast
+import difflib
 import hashlib
 import json
 import random
@@ -247,7 +248,9 @@ def norm_helpsteer3_edit(row, rng):
 
 
 def norm_iterater(row, rng):
-    if row["before_revision"].strip() == row["after_revision"].strip():
+    before, after = row["before_revision"].strip(), row["after_revision"].strip()
+    # drop no-ops, fragments, and page replacements/spam (revision unrelated to the draft)
+    if before == after or len(after) < 200 or difflib.SequenceMatcher(None, before, after).ratio() < 0.6:
         return None
     return {
         "domain": "writing",

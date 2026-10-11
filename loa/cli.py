@@ -108,12 +108,12 @@ def cmd_build(a):
 
     seen, splits, stats = set(), collections.defaultdict(list), collections.Counter()
     for r in _read(a.inp):
-        key = hashlib.sha1(json.dumps(r["context"], sort_keys=True).encode()).hexdigest()
+        key = hashlib.sha1(json.dumps([r["context"], r["target"]], sort_keys=True).encode()).hexdigest()
         if key in seen or r["id"] in seen:
             stats["dup"] += 1
             continue
         seen |= {key, r["id"]}
-        if r["labels"]["quality"]["score"] < a.min_quality and r["meta"].get("stage") != "critic":
+        if r["labels"]["quality"]["score"] < a.min_quality:
             stats["low_quality"] += 1
             continue
         if len(r["labels"]["sketch"]["blocks"]) > a.slots:
