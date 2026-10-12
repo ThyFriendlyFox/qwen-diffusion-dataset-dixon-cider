@@ -2,6 +2,44 @@
 
 Ladder-of-Abstraction labels for training a diffusion planner that hands off to an autoregressive (AR) verbalizer.
 
+## The short version (ELI5)
+
+When you write a school report, you don't start with the first word. First you decide what you want to say and who it's for. Then you make an outline. Then you scribble rough notes in each part of the outline. Only at the end do you write it out neatly.
+
+Most chatbots skip all that. They write one word at a time from the very start, and they have to figure out the plan as they go.
+
+This project splits the job between two models:
+
+- A **small, fast planner** makes the plan first. It doesn't write left to right. It starts with a blank page and fills in the whole plan at once, a little more each step, the way a blurry picture comes into focus. The big ideas show up first, then the outline, then the rough notes.
+- A **big, smart writer** turns that plan into the final answer. It also checks the plan as it goes, so a bad note from the planner doesn't get copied in blindly.
+
+To learn to plan, the planner needs examples: lots of good answers, each with the plan behind it written out. That is what this repo makes. It takes answers from public datasets, asks a strong AI model to write down the plan behind each one, checks the result, and packs everything into training files.
+
+Here is one real row from the dataset. The question is a word problem; each colored box is one rung of the plan.
+
+![The four rungs of the plan for one math answer](docs/img/ladder.svg)
+
+The planner learns to produce the colored boxes from top to bottom. During training, parts of the plan are hidden (grey) and the model learns to fill them back in. The most abstract rung is always filled in first:
+
+![The plan canvas filling in over five steps](docs/img/denoise.svg)
+
+And this is where each piece of the dataset goes in the full system:
+
+![Planner, projector and writer, with the critic loop](docs/img/architecture.svg)
+
+Words used below:
+
+| Word | Meaning |
+|---|---|
+| Rung | One level of the plan: intent, structure or sketch. |
+| Block | One slot in the sketch, about a paragraph, a step or a tool call. |
+| Target | The finished answer from the source dataset. |
+| Teacher | The strong model that writes the plan for each target. |
+| Canvas | The plan laid out as text with a fixed number of block slots, so the planner always sees the same shape. |
+| Critic | The part that notices a wrong block and redoes it. |
+
+## How it works
+
 Each row pairs a response from a public dataset (`target`) with the plan behind it, as labeled by a teacher model. The plan has three rungs, which the diffusion model unmasks in order:
 
 1. **Intent**: ideas, emotions, actions, audience. No wording.
@@ -22,9 +60,12 @@ The AR model then writes the final text from the plan.
 | `loa/validate.py` | Rejects or warns on bad labels. |
 | `loa/canvas.py` | Fixed-slot block canvas and the semantic noise schedule. |
 | `loa/cli.py` | `fetch`, `label`, `build`, `check`. |
+| `scripts/make_figures.py` | Regenerates the images in `docs/img/` from the seed set. |
 | `mix.json` | Rows per source for the full run (about 26k). |
 | `data/seed/seed.jsonl` | Gold seed set: 37 labeled and validated rows. |
 | `data/seed/pool.jsonl` | The unlabeled rows the seed set was drawn from. |
+
+![Build pipeline from sources to splits](docs/img/pipeline.svg)
 
 ## Row format
 
@@ -78,9 +119,13 @@ S1 [none (opening)] validate the concern
 </sketch>
 ```
 
+![Mask rate by rung as noise rises](docs/img/schedule.svg)
+
 Noise schedule (`canvas.mask_rate`): each rung has a noise band. Sketch is `[0, 0.4]`, structure `[0.3, 0.7]`, intent `[0.6, 1]`. The forward process masks the sketch first, so denoising reveals intent, then structure, then sketch. The bands overlap so neighboring rungs can condition on each other.
 
 Projector pairs: `alignment` maps each block to its span of `target`. These (block, span) pairs are the training data for the 2-layer MLP adapter.
+
+![Sketch blocks matched to the text they became](docs/img/alignment.svg)
 
 ## Sources
 
@@ -114,9 +159,11 @@ In critic mode the teacher labels the revised text, then records each change fro
 
 `data/seed/seed.jsonl` has 37 rows, all passing the validator.
 
+![Seed set by domain, quality and block support](docs/img/seed.svg)
+
 | | |
 |---|---|
-| Mix | 6 chat, 8 math, 8 science, 8 agentic, 7 critic |
+| Mix by source | 6 chat, 8 math, 8 science, 8 agentic, 7 critic (the chart groups critic rows by topic) |
 | Blocks per row | 1 to 8, mean 4.2 |
 | Critiques | 77 total; 10 blocks marked `unsupported` |
 | Quality | Mean 3.7; 31 rows score 3 or higher |
@@ -145,6 +192,7 @@ python -m loa.cli label --in data/raw/pool.jsonl --out data/labeled/rows.jsonl -
 python -m loa.cli label --in data/raw/pool.jsonl --out data/labeled/rows.jsonl --batch-id <id> # collect batch
 python -m loa.cli build --in data/labeled/rows.jsonl data/seed/seed.jsonl --out data/release
 python -m pytest -q tests
+python scripts/make_figures.py      # redraw docs/img after the seed set changes
 ```
 
 `label` skips ids already in `--out`, so it can be resumed. Rejected rows go to `<out>.rejects` with their errors.

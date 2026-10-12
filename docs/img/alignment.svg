@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="352" viewBox="0 0 900 352" role="img" aria-label="Sketch blocks aligned to spans of the answer"><title>Sketch blocks aligned to spans of the answer</title>
+<style>
+  svg { --bg:#fcfcfb; --ink:#0b0b0b; --ink2:#52514e; --ink3:#8a8984; --line:#d9d8d3; --card:#ffffff;
+        --mask:#e4e3de; --intent:#2a78d6; --structure:#eb6834; --sketch:#1baf7a; --text:#52514e;
+        --intent-bg:#e8f0fb; --structure-bg:#fdeee7; --sketch-bg:#e5f6ef; --text-bg:#efeeea; }
+  @media (prefers-color-scheme: dark) {
+    svg { --bg:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --ink3:#8f8e86; --line:#3a3a37; --card:#232322;
+          --mask:#34342f; --intent:#3987e5; --structure:#d95926; --sketch:#199e70; --text:#c3c2b7;
+          --intent-bg:#1c2a3d; --structure-bg:#3a2419; --sketch-bg:#16302a; --text-bg:#2b2b29; }
+  }
+  text { font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; fill: var(--ink); }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .h { font-size: 20px; font-weight: 700; }
+  .t { font-size: 15px; font-weight: 600; }
+  .b { font-size: 13px; }
+  .s { font-size: 12px; fill: var(--ink2); }
+  .xs { font-size: 11px; fill: var(--ink3); }
+  .bg { fill: var(--bg); }
+  .card { fill: var(--card); stroke: var(--line); stroke-width: 1; }
+  .rule { stroke: var(--line); stroke-width: 1; fill: none; }
+  .arrow { stroke: var(--ink3); stroke-width: 2; fill: none; marker-end: url(#ah); }
+  .ah { fill: var(--ink3); }
+</style>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs><rect class="bg" x="0" y="0" width="900" height="352" rx="12"/><text x="32" y="44" class="h" text-anchor="start" >Each sketch block is tied to the exact text it became</text><text x="32" y="68" class="s" text-anchor="start" >These (block, span) pairs train the projector. Spans are contiguous and cover the whole answer.</text><rect x="32" y="100" width="330" height="46" rx="8" fill="var(--card)" stroke="var(--intent)" stroke-width="2" /><text x="46" y="120" class="b" text-anchor="start" style="font-weight:600">B1  computation</text><text x="46" y="137" class="s mono" text-anchor="start" >&quot;Tamika&#x27;s distance = hrs x mph&quot;</text><line x1="364" y1="123" x2="430" y2="123" class="arrow"/><rect x="432" y="100" width="436" height="46" rx="8" fill="var(--text-bg)" stroke="var(--intent)" stroke-width="2" /><text x="446" y="128" class="b mono" text-anchor="start" >Tamika drove 8 hours * 45 mph = 360 miles</text><text x="860" y="140" class="xs" text-anchor="end" >chars 0-42</text><rect x="32" y="158" width="330" height="46" rx="8" fill="var(--card)" stroke="var(--structure)" stroke-width="2" /><text x="46" y="178" class="b" text-anchor="start" style="font-weight:600">B2  computation</text><text x="46" y="195" class="s mono" text-anchor="start" >&quot;same for Logan&quot;</text><line x1="364" y1="181" x2="430" y2="181" class="arrow"/><rect x="432" y="158" width="436" height="46" rx="8" fill="var(--text-bg)" stroke="var(--structure)" stroke-width="2" /><text x="446" y="186" class="b mono" text-anchor="start" >Logan drove 5 hours * 55 mph = 275 miles</text><text x="860" y="198" class="xs" text-anchor="end" >chars 42-83</text><rect x="32" y="216" width="330" height="46" rx="8" fill="var(--card)" stroke="var(--sketch)" stroke-width="2" /><text x="46" y="236" class="b" text-anchor="start" style="font-weight:600">B3  computation</text><text x="46" y="253" class="s mono" text-anchor="start" >&quot;subtract the two, say she went farther&quot;</text><line x1="364" y1="239" x2="430" y2="239" class="arrow"/><rect x="432" y="216" width="436" height="46" rx="8" fill="var(--text-bg)" stroke="var(--sketch)" stroke-width="2" /><text x="446" y="236" class="b mono" text-anchor="start" >360 - 275 = 85 miles</text><text x="446" y="253" class="b mono" text-anchor="start" >Tamika drove 85 miles farther.</text><text x="860" y="256" class="xs" text-anchor="end" >chars 83-136</text><rect x="32" y="274" width="330" height="46" rx="8" fill="var(--card)" stroke="var(--ink3)" stroke-width="2" /><text x="46" y="294" class="b" text-anchor="start" style="font-weight:600">B4  answer</text><text x="46" y="311" class="s mono" text-anchor="start" >&quot;85&quot;</text><line x1="364" y1="297" x2="430" y2="297" class="arrow"/><rect x="432" y="274" width="436" height="46" rx="8" fill="var(--text-bg)" stroke="var(--ink3)" stroke-width="2" /><text x="446" y="302" class="b mono" text-anchor="start" >Answer: 85</text><text x="860" y="314" class="xs" text-anchor="end" >chars 136-150</text></svg>
